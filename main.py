@@ -15,7 +15,7 @@ import tensorflow as tf
 import pickle
 from matplotlib import pyplot as plt
 
-
+# TODO: a) figure out why random seed is not working, b)  save runtime for logs, c) refactor to make code slimmer
 class DQN:
     def __init__(self, env, lr, gamma, epsilon, epsilon_decay, num_episodes=2000):
 
@@ -45,6 +45,8 @@ class DQN:
     def train(self, can_stop=True):
         for episode in range(self.num_episodes):
             state, _ = env.reset(seed=episode)
+            np.random.seed(episode)
+
             reward_for_episode = 0
             num_steps = 1000
             state = np.reshape(state, [1, self.num_observation_space])
@@ -160,7 +162,16 @@ class DQN:
 def test_already_trained_model(trained_model):
     rewards_list = []
     num_test_episode = 100
-    env = gym.make("LunarLander-v2")
+    env = gym.make("CartPole-v1", render_mode="rgb_array")
+    env = gym.wrappers.RecordVideo(env=env, 
+                                   video_folder='./video', 
+                                   episode_trigger = lambda x: x < 10,
+                                   disable_logger = True)
+    
+    # set seeds
+    obs, info = env.reset(seed=0)
+    np.random.seed(21)
+
     print("Starting Testing of the trained model...")
 
     step_count = 1000
@@ -234,10 +245,10 @@ def plot_experiments(df, chart_name, title, x_axis_label, y_axis_label, y_limit)
 
 def run_experiment_for_gamma():
     print('Running Experiment for gamma...')
-    env = gym.make('LunarLander-v2')
+    env = gym.make('CartPole-v1')
 
     # set seeds
-    env.seed(21)
+    obs, info = env.reset(seed=0)
     np.random.seed(21)
 
     # setting up params
@@ -250,9 +261,9 @@ def run_experiment_for_gamma():
     rewards_list_for_gammas = []
     for gamma_value in gamma_list:
         # save_dir = "hp_gamma_"+ str(gamma_value) + "_"
-        model = DQN(env, lr, gamma_value, epsilon, epsilon_decay)
+        model = DQN(env, lr, gamma_value, epsilon, epsilon_decay, training_episodes)
         print("Training model for Gamma: {}".format(gamma_value))
-        model.train(training_episodes, False)
+        model.train(False)
         rewards_list_for_gammas.append(model.rewards_list)
 
     pickle.dump(rewards_list_for_gammas, open("rewards_list_for_gammas.p", "wb"))
@@ -268,10 +279,10 @@ def run_experiment_for_gamma():
 
 def run_experiment_for_lr():
     print('Running Experiment for learning rate...')
-    env = gym.make('LunarLander-v2')
+    env = gym.make('CartPole-v1')
 
     # set seeds
-    env.seed(21)
+    obs, info = env.reset(seed=0)
     np.random.seed(21)
 
     # setting up params
@@ -282,9 +293,9 @@ def run_experiment_for_lr():
     training_episodes = 1000
     rewards_list_for_lrs = []
     for lr_value in lr_values:
-        model = DQN(env, lr_value, gamma, epsilon, epsilon_decay)
+        model = DQN(env, lr_value, gamma, epsilon, epsilon_decay, training_episodes)
         print("Training model for LR: {}".format(lr_value))
-        model.train(training_episodes, False)
+        model.train(False)
         rewards_list_for_lrs.append(model.rewards_list)
 
     pickle.dump(rewards_list_for_lrs, open("rewards_list_for_lrs.p", "wb"))
@@ -299,10 +310,10 @@ def run_experiment_for_lr():
 
 def run_experiment_for_ed():
     print('Running Experiment for epsilon decay...')
-    env = gym.make('LunarLander-v2')
+    env = gym.make('CartPole-v1')
 
     # set seeds
-    env.seed(21)
+    obs, info = env.reset(seed=0)
     np.random.seed(21)
 
     # setting up params
@@ -315,9 +326,9 @@ def run_experiment_for_ed():
     rewards_list_for_ed = []
     for ed in ed_values:
         save_dir = "hp_ed_"+ str(ed) + "_"
-        model = DQN(env, lr, gamma, epsilon, ed)
+        model = DQN(env, lr, gamma, epsilon, ed, training_episodes)
         print("Training model for ED: {}".format(ed))
-        model.train(training_episodes, False)
+        model.train(False)
         rewards_list_for_ed.append(model.rewards_list)
 
     pickle.dump(rewards_list_for_ed, open("rewards_list_for_ed.p", "wb"))
@@ -332,22 +343,18 @@ def run_experiment_for_ed():
 
 if __name__ == '__main__':
     print("beginning training...")
-    env = gym.make('LunarLander-v2')
+    env = gym.make('CartPole-v1')
     
     # # set tensorflow to use gpu
     # gpus = tf.config.experimental.list_physical_devices('GPU')
     # tf.config.experimental.set_memory_growth(gpus, True)
-
-    # set seeds
-    obs, info = env.reset(seed=0)
-    np.random.seed(21)
 
     # setting up params
     lr = 0.001
     epsilon = 1.0
     epsilon_decay = 0.995
     gamma = 0.99
-    training_episodes = 2000
+    training_episodes = 1000
     
     print('Start!!')
     model = DQN(env, lr, gamma, epsilon, epsilon_decay, num_episodes=training_episodes)
@@ -364,7 +371,7 @@ if __name__ == '__main__':
 
     # plot reward in graph
     reward_df = pd.DataFrame(rewards_list)
-    plot_df(reward_df, "Figure 1: Reward for each training episode", "Reward for each training episode", "Episode","Reward")
+    plot_df(reward_df, "Figure 1, Reward for each training episode", "Reward for each training episode", "Episode","Reward")
 
     # Test the model
     trained_model = load_model(save_dir + "trained_model.h5")
@@ -372,7 +379,7 @@ if __name__ == '__main__':
     pickle.dump(test_rewards, open(save_dir + "test_rewards.p", "wb"))
     test_rewards = pickle.load(open(save_dir + "test_rewards.p", "rb"))
 
-    plot_df2(pd.DataFrame(test_rewards), "Figure 2: Reward for each testing episode","Reward for each testing episode", "Episode", "Reward")
+    plot_df2(pd.DataFrame(test_rewards), "Figure 2, Reward for each testing episode.png","Reward for each testing episode", "Episode", "Reward")
     print("Training and Testing Completed...!")
 
     # Run experiments for hyper-parameter
