@@ -345,9 +345,9 @@ if __name__ == '__main__':
     print("beginning training...")
     env = gym.make('CartPole-v1')
     
-    # # set tensorflow to use gpu
-    # gpus = tf.config.experimental.list_physical_devices('GPU')
-    # tf.config.experimental.set_memory_growth(gpus, True)
+    # set tensorflow to use gpu
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus, True)
 
     # setting up params
     lr = 0.001
