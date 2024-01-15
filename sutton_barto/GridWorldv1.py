@@ -7,12 +7,12 @@ class GridWorldEnv(gym.Env):
 
     metadata = {
         "render_modes": ["human", "rgb_array"],
-        "render_fps": 4,
+        "render_fps": 60,
     }
 
     def __init__(self, render_mode=None, size=np.array([7,10])):
         self.size = size    # Size of the gridworld
-        self.window_size = size*70 # Screen size
+        self.window_size = size*100 # Screen size
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
@@ -93,7 +93,7 @@ class GridWorldEnv(gym.Env):
         _, self._agent_location = self._check_agent_escaped(self._agent_location)
 
         if np.array_equal(self._agent_location, self._target_location):
-            reward = 1
+            reward = 0
             terminated = True
 
         observation = self._get_obs()
