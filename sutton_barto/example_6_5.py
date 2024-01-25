@@ -3,18 +3,7 @@ import pygame
 import matplotlib.pyplot as plt
 import gymnasium as gym
 from gymnasium import spaces
-from GridWorldv1 import GridWorldEnv
-
-np.random.seed(42)
-
-gym.register(
-     id="GridWorld-v0",
-     entry_point="GridWorldv1:GridWorldEnv",
-     max_episode_steps=300,
-)
-
-env = gym.make("GridWorld-v0",render_mode="human")
-obs = env.reset()
+from sutton_barto.GridWorldv0 import GridWorldEnv
 
 class SARSA:
     def __init__(self, env, alpha=0.5, gamma=1, epsilon=0.1):
@@ -133,6 +122,17 @@ class SARSA:
                 self.timesteps.append(timestep)
                 self.episodes.append(episode+2)
                 self._update_plot()
+
+np.random.seed(42)
+
+gym.register(
+     id="GridWorld-v0",
+     entry_point="GridWorldv0:GridWorldEnv",
+     max_episode_steps=300,
+)
+
+env = gym.make("GridWorld-v0",render_mode="human")
+obs = env.reset()
 
 
 algo = SARSA(env, gamma=1)

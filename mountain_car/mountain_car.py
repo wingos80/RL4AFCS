@@ -3,6 +3,7 @@ import numpy as np
 import tiles
 import matplotlib.pyplot as plt
 import pickle
+import timeit
 class TileCodingFuncApprox():
     def __init__(self, st_low, st_high, nb_actions, learn_rate, num_tilings, init_val):
         """
@@ -51,7 +52,7 @@ class SARSA_N:
     def __init__(self, env, q_hat, n=4, alpha=0.5, gamma=1, epsilon=0.1, verbose=True, seed=0):
         self.env = env; self.N = env.action_space.n
         self.q_hat = q_hat(env.low, env.high, self.N, alpha, num_tilings=8, init_val=0)
-        self.n = n
+        self.n = n      # number of TD steps
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
@@ -143,7 +144,8 @@ class SARSA_N:
             done2 = True
             tau = 0
             while True:
-                env.render()
+                if self.verbose:
+                    env.render()
                 if t < T:
                     obs, reward, done, _, _ = self.env.step(At[-1])
                     states = obs.copy()
@@ -172,7 +174,7 @@ class SARSA_N:
                     St.pop(0); At.pop(0); Rt.pop(0)
 
                 t += 1 # increment t in the **end**!
-                if t % 20 == 0 & self.verbose:
+                if t % 20 == 0 and self.verbose:
                     print("actino: ", debug_action)
                     print("position: ", St[-1][0], "\n\n")
                     print("time step: ", t)
@@ -183,33 +185,47 @@ class SARSA_N:
                     # self._update_plot()
                     break
 
-env = gym.make("MountainCar-v0")
+env = gym.make("Acrobot-v1", render_mode="human")
 obs = env.reset()
 q_hat = lambda st_low, st_high, nb_actions, learn_rate, num_tilings, init_val: TileCodingFuncApprox(st_low, st_high, nb_actions, learn_rate, num_tilings, init_val)
 
-num_experiments = 1
-max_episodes = 10
+num_experiments = 20
+max_episodes = 500
 times = np.empty((num_experiments,max_episodes))
 times_n = np.empty((num_experiments,max_episodes))
 
-times = {'1': np.zeros((num_experiments,max_episodes)),
-         '4': np.zeros((num_experiments,max_episodes)),
-         '8': np.zeros((num_experiments,max_episodes)),
-         '12': np.zeros((num_experiments,max_episodes))}
+times = {'4': np.zeros((num_experiments,max_episodes))}
+# times = {'1': np.zeros((num_experiments,max_episodes)),
+#          '4': np.zeros((num_experiments,max_episodes)),
+#          '8': np.zeros((num_experiments,max_episodes)),
+#          '12': np.zeros((num_experiments,max_episodes))}
 
+compute_times = {'1': 0,
+                 '4': 0,
+                 '8': 0,
+                 '12': 0}
 for i in range(num_experiments):
+    print(f'\nExperiment {i+1}/{num_experiments}')
     for key,value in times.items():
-        sarsa_n = SARSA_N(env, q_hat, n=int(key), alpha=0.3, gamma=1, epsilon=0.05, verbose=False, seed=i)
+        print(f'    Running {key}-step SARSA')
+        tic = timeit.default_timer()
+        sarsa_n = SARSA_N(env, q_hat, n=int(key), alpha=0.3, gamma=1, epsilon=0.05, verbose=True, seed=i)
         sarsa_n.train(max_episodes=max_episodes)
+        toc = timeit.default_timer()
 
         value[i,:] = sarsa_n.timesteps
-
         times[key] = value
+        compute_times[key] += toc-tic
+
+        print(f'    Done in {toc-tic:.2f}s')
+    
+
+compute_times = {key: value/num_experiments for key,value in compute_times.items()}
 
 h = plt.figure()
 
 for key,value in times.items():
-    plt.plot(np.mean(value,axis=0),label=f'{key}-step SARSA')
+    plt.plot(np.mean(value,axis=0),label=f'{key}-step SARSA, {compute_times[key]:.2f}s')
     # for i in range(num_experiments):
     #     plt.plot(value[i,:],alpha=0.05,color='r',linestyle='--')
 
@@ -217,11 +233,12 @@ plt.ylabel('Timesteps per episode')
 plt.xlabel('Episode')
 plt.legend()
 plt.grid()
-plt.savefig('experiment.png', dpi=300, bbox_inches='tight')
+plt.show()
+# plt.savefig('experiment.png', dpi=300, bbox_inches='tight')
 
-# pickle the times and the figure
-with open('times.pickle', 'wb') as f:
-    pickle.dump(times, f)
+# # pickle the times and the figure
+# with open('times.pickle', 'wb') as f:
+#     pickle.dump(times, f)
 
-with open('figure.pickle', 'wb') as f:
-    pickle.dump(h, f)
+# with open('figure.pickle', 'wb') as f:
+#     pickle.dump(h, f)

@@ -7,13 +7,12 @@ class GridWorldEnv(gym.Env):
 
     metadata = {
         "render_modes": ["human", "rgb_array"],
-        "render_fps": 8,
+        "render_fps": 60,
     }
 
-    def __init__(self, render_mode=None, size=np.array([6,9])):
+    def __init__(self, render_mode=None, size=np.array([7,10])):
         self.size = size    # Size of the gridworld
         self.window_size = size*100 # Screen size
-        self.move = np.array([0, 0])
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
@@ -69,27 +68,13 @@ class GridWorldEnv(gym.Env):
             return False, location2
         else:
             return True, location2
-        
-    def _check_agent_walled(self, location):
-        # Check if the agent has hit a wall
-        if np.any(np.all(self.walls == location, axis=1)):
-            return True
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
 
-        self._agent_location = np.array([4, 0])
-        self._target_location = np.array([5, 8])
-        self._agent_locs = [self._agent_location.copy()]
+        self._agent_location = np.array([3, 0])
+        self._target_location = np.array([3, 7])
 
-        # self.walls = np.array([[4, 2]])
-        self.walls = np.array([[4, 2],
-                          [3, 2],
-                          [2, 2],
-                          [1, 5],
-                          [5, 7],
-                          [4, 7],
-                          [3, 7]])
         observation = self._get_obs()
         info = self._get_info()
 
@@ -99,30 +84,24 @@ class GridWorldEnv(gym.Env):
         return observation, info
     
     def step(self, action):
-        reward = 0
+        reward = -1
         terminated = False
 
-        self.move   = self._action_to_direction[action]
-        self._agent_location += self.move
+        move   = self._action_to_direction[action]
+        self._agent_location += move
 
         _, self._agent_location = self._check_agent_escaped(self._agent_location)
 
-        if self._check_agent_walled(self._agent_location):
-            self._agent_location -= self.move
-
         if np.array_equal(self._agent_location, self._target_location):
-            reward = 1
+            reward = 0
             terminated = True
 
         observation = self._get_obs()
         info        = self._get_info()
 
-
-        self._agent_locs.append(self._agent_location.copy())
-
-        
         if self.render_mode == "human":
-            self.render()
+            self._render_frame()
+
         return observation, reward, terminated, False, info
 
     def render(self):
@@ -164,40 +143,12 @@ class GridWorldEnv(gym.Env):
                 (pix_square_size, pix_square_size),
             ),
         )
-        # Now we draw the walls
-        for wall in self.walls:
-            pygame.draw.rect(
-                canvas,
-                (0, 0, 0),
-                pygame.Rect(
-                    _real_to_screen(self, wall + np.array([1, 0])),
-                    (pix_square_size, pix_square_size),
-                ),
-            )
         # Now we draw the agent
         pygame.draw.circle(
             canvas,
             (0, 0, 255),
             _os_agent_location,
             pix_square_size / 3,
-        )
-        # Now we draw small triangle to point to where agent moved to
-        # first get previous location
-        # then draw traingle on edge of where agent moved to
-
-        orthogonal_move = np.array([self.move[1], -self.move[0]])
-        prev_loc = self._agent_locs[-2] if len(self._agent_locs) > 1 else self._agent_locs[-1]
-        triangle_loc = prev_loc.copy() + 0.35*self.move.copy()
-        t1 = triangle_loc
-        t2 = triangle_loc - 0.1*self.move + 0.1*orthogonal_move
-        t3 = triangle_loc - 0.1*self.move - 0.1*orthogonal_move
-
-        pygame.draw.polygon(
-            canvas,
-            (200, 0, 0),
-            [_real_to_screen(self, t1 + 0.5),
-             _real_to_screen(self, t2 + 0.5),
-             _real_to_screen(self, t3 + 0.5)]
         )
 
         # Finally, add some gridlines
