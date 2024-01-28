@@ -180,36 +180,39 @@ class SARSA_N:
                     print("time step: ", t)
 
                 if tau == T-1:
-                    self.timesteps.append(t)
+                    self.timesteps.append(T)
                     self.episodes.append(episode+1)
                     # self._update_plot()
                     break
 
-env = gym.make("Acrobot-v1", render_mode="human")
+
+
+
+env = gym.make("MountainCar-v0", render_mode=None)
 obs = env.reset()
 q_hat = lambda st_low, st_high, nb_actions, learn_rate, num_tilings, init_val: TileCodingFuncApprox(st_low, st_high, nb_actions, learn_rate, num_tilings, init_val)
 
-num_experiments = 20
+num_experiments = 35
 max_episodes = 500
 times = np.empty((num_experiments,max_episodes))
 times_n = np.empty((num_experiments,max_episodes))
 
-times = {'4': np.zeros((num_experiments,max_episodes))}
-# times = {'1': np.zeros((num_experiments,max_episodes)),
-#          '4': np.zeros((num_experiments,max_episodes)),
-#          '8': np.zeros((num_experiments,max_episodes)),
-#          '12': np.zeros((num_experiments,max_episodes))}
+# times = {'4': np.zeros((num_experiments,max_episodes))}
+times = {'1': np.zeros((num_experiments,max_episodes)),
+         '2': np.zeros((num_experiments,max_episodes)),
+         '3': np.zeros((num_experiments,max_episodes)),
+         '4': np.zeros((num_experiments,max_episodes))}
 
 compute_times = {'1': 0,
-                 '4': 0,
-                 '8': 0,
-                 '12': 0}
+                 '2': 0,
+                 '3': 0,
+                 '4': 0}
 for i in range(num_experiments):
     print(f'\nExperiment {i+1}/{num_experiments}')
     for key,value in times.items():
         print(f'    Running {key}-step SARSA')
         tic = timeit.default_timer()
-        sarsa_n = SARSA_N(env, q_hat, n=int(key), alpha=0.3, gamma=1, epsilon=0.05, verbose=True, seed=i)
+        sarsa_n = SARSA_N(env, q_hat, n=int(key), alpha=0.3, gamma=1, epsilon=0.05, verbose=0, seed=i)
         sarsa_n.train(max_episodes=max_episodes)
         toc = timeit.default_timer()
 
@@ -229,16 +232,19 @@ for key,value in times.items():
     # for i in range(num_experiments):
     #     plt.plot(value[i,:],alpha=0.05,color='r',linestyle='--')
 
+plt.yscale('log')
+plt.ylim(80,2500)
 plt.ylabel('Timesteps per episode')
 plt.xlabel('Episode')
 plt.legend()
 plt.grid()
-plt.show()
-# plt.savefig('experiment.png', dpi=300, bbox_inches='tight')
+# plt.show()
 
-# # pickle the times and the figure
-# with open('times.pickle', 'wb') as f:
-#     pickle.dump(times, f)
+plt.savefig('experiment3.png', dpi=300, bbox_inches='tight')
 
-# with open('figure.pickle', 'wb') as f:
-#     pickle.dump(h, f)
+# pickle the times and the figure
+with open('times3.pickle', 'wb') as f:
+    pickle.dump(times, f)
+
+with open('figure3.pickle', 'wb') as f:
+    pickle.dump(h, f)

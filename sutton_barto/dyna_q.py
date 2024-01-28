@@ -197,17 +197,53 @@ class DynaQ:
 
     def _set_up_plot(self):
         self.fig, self.ax = plt.subplots()
+        self.ax.title.set_text("Dyna-Q timesteps per episode")
         self.ax.set_xlabel("Episode")
         self.ax.set_ylabel("Time steps per episode")
         self.fig.show()
 
+        self.fig2, self.ax2 = plt.subplots()
+        self.ax2.title.set_text("Dyna-Q Vmap")
+        self.ax2.set_xlabel("x")
+        self.ax2.set_ylabel("y")
+        self.ax2.set_aspect('equal')
+        self.ax2.set_xlim(0, 9)
+        self.ax2.set_ylim(0, 6)
+        Vmap = self.create_Vmap()
+        cm = self.ax2.pcolormesh(Vmap)
+        self.cbar = self.fig2.colorbar(cm, ax=self.ax2)
+
+        self.fig2.show()
+        
     def _update_plot(self):    
         self.ax.clear()
         self.ax.plot(self.episodes, self.timesteps)
+        self.ax.set_yscale('log')
         self.ax.set_xlabel("Episode")
         self.ax.set_ylabel("Time steps per episode")
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
+
+    def _update_Vmap(self):
+        self.ax2.clear()
+        Vmap = self.create_Vmap()
+        self.ax2.pcolormesh(Vmap)
+        self.ax2.set_xlabel("x")
+        self.ax2.set_ylabel("y")
+        self.ax2.set_title("Vmap")
+        self.ax2.set_aspect('equal')
+        self.ax2.set_xlim(0, 9)
+        self.ax2.set_ylim(0, 6)
+        self.cbar.vmin=Vmap.min()
+        self.cbar.vmax=Vmap.max()
+        self.fig2.canvas.draw()
+        self.fig2.canvas.flush_events()
+
+    def create_Vmap(self):
+
+        Vmap = np.sum(self.Q,axis=2)
+
+        return Vmap
 
     def train(self, max_episodes=100):
         """
@@ -273,11 +309,20 @@ class DynaQ:
 
                     self.Q[s[0], s[1], a] += self.alpha * (
                                 r + self.gamma * learning_Q - self.Q[s[0], s[1], a])
+                
+                self._update_Vmap()
 
-            if done and self.verbose:
+            if done:
                 self.timesteps.append(timestep)
                 self.episodes.append(episode+1)
-                self._update_plot()
+                if self.verbose:
+                    print("episode: ", episode)
+                    print("timesteps: ", timestep)
+                    print("Q: ", self.Q)
+                    print("model: ", self.model.memory)
+                    print("")
+                    self._update_plot()
+                    self._update_Vmap()
 
 
 # np.random.seed(42)
@@ -294,7 +339,22 @@ obs = env.reset()
 all_timesteps = []
 all_episodes = []
 
-algo = DynaQ(env, ps=5, gamma=0.95, alpha=0.1, seed=5)
-algo.train(40)
+for i in range(1):
+    print("run: ", i)
+    algo = DynaQ(env, ps=10, gamma=0.95, alpha=0.1, seed=i,verbose=1)
+    algo.train(200)
+
+    all_timesteps.append(algo.timesteps)
+    all_episodes.append(algo.episodes)
+
 
 plt.show()
+# # take average timesteps used
+# timesteps = np.mean(all_timesteps, axis=0)
+# plt.plot(all_episodes[0], timesteps)
+# plt.yscale('log')
+# plt.xlabel("Episode")
+# plt.ylabel("Time steps per episode")
+# plt.grid()
+# plt.ylim(10**1, 5*10**2)
+# plt.show()

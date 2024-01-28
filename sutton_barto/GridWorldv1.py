@@ -7,7 +7,7 @@ class GridWorldEnv(gym.Env):
 
     metadata = {
         "render_modes": ["human", "rgb_array"],
-        "render_fps": 8,
+        "render_fps": 80,
     }
 
     def __init__(self, render_mode=None, size=np.array([6,9])):
@@ -78,18 +78,18 @@ class GridWorldEnv(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
 
-        self._agent_location = np.array([4, 0])
+        self._agent_location = np.array([3, 0])
         self._target_location = np.array([5, 8])
         self._agent_locs = [self._agent_location.copy()]
 
         # self.walls = np.array([[4, 2]])
         self.walls = np.array([[4, 2],
-                          [3, 2],
-                          [2, 2],
-                          [1, 5],
-                          [5, 7],
-                          [4, 7],
-                          [3, 7]])
+                               [3, 2],
+                               [2, 2],
+                               [1, 5],
+                               [5, 7],
+                               [4, 7],
+                               [3, 7]])
         observation = self._get_obs()
         info = self._get_info()
 
@@ -109,6 +109,7 @@ class GridWorldEnv(gym.Env):
 
         if self._check_agent_walled(self._agent_location):
             self._agent_location -= self.move
+            # reward = -1
 
         if np.array_equal(self._agent_location, self._target_location):
             reward = 1
