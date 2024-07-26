@@ -1,0 +1,7 @@
+# Ignore all slprj files #
+##########################
+linearizing/slprj/
+
+# Ignore all tuning attempts #
+##########################
+IDHP/exps/
