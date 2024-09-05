@@ -1,0 +1,6 @@
+scipy
+numpy
+matplotlib
+tensorflow
+tqdm
+gymnasium

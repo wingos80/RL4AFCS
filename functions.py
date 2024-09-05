@@ -254,13 +254,13 @@ def MC_plotting(directory, arrays, dt, t_end, alpha, save=False, colors=None):
     y_wc   = {r'$w_2$': [wc_array.T, alpha]}
     make_plots(time, [y_wa, y_wc], f'{directory}Weight norms evolution', r'$t$ [s]', [r'||Actor||', r'||Critic||'], save=save, colors=colors)
     # put window on top left
-    place_tl()
+    # place_tl()
 
     # plot history of epsilon norms
     y_eps = {r'$||\epsilon||$': [eps_array.T, alpha]}
     make_plots(time, [y_eps], f'{directory}RLS model error norm', r'$t$ [s]', [r'$||\epsilon||$'], save=save, colors=colors)    
     # put window on bot left
-    place_bl()
+    # place_bl()
 
     aoas = np.rad2deg(x_array[:,:,0].T)
     qs   = np.rad2deg(x_array[:,:,1].T)
@@ -280,13 +280,13 @@ def MC_plotting(directory, arrays, dt, t_end, alpha, save=False, colors=None):
     if save:
         plt.savefig(f'{directory}States_and_action.pdf')
     # put window on top right
-    place_tr()
+    # place_tr()
 
     # plot history of rewards
     y_c = {r'$-c$': [-c_array.T, alpha]}
     make_plots(time, [y_c], f'{directory}NEGATIVE Reward history', r'$t$ [s]', [r'$-c$ [-]'], save=save, colors=colors, log=[0])
     # put window on bot right
-    place_br()
+    # place_br()
 
     # plot history of aoa error
     aoa_error = np.rad2deg(np.sqrt(-2*(c_array/kappa)))
@@ -296,24 +296,24 @@ def MC_plotting(directory, arrays, dt, t_end, alpha, save=False, colors=None):
     if save:
         plt.savefig(f'{directory}Alpha error.pdf')
     # put window on bot right
-    place_br()
+    # place_br()
 
     # plot history of rls params
     y_params = {r'$\theta$': [p_array.T, alpha]}
     y_covs   = {r'$\Sigma$': [cov_array.T, alpha]}
     make_plots(time, [y_params, y_covs], f'{directory}RLS parameter norms', r'$t$ [s]', [r'||$\theta$||', r'||Cov||'], save=save, colors=colors, log =[1])
     # put window on top right right
-    place_trr()
+    # place_trr()
 
     # plot history of a_grad
     y_a_grad = {r'$||\nabla_a||$': [a_grad.T, alpha]}
     make_plots(time, [y_a_grad], f'{directory}Actor gradient norms', r'$t$ [s]', [r'||$\nabla_a$||'], save=save, colors=colors, log=[0])
-    place_brr()
+    # place_brr()
 
     # plot history of c_grad
     y_c_grad = {r'$||\nabla_c||$': [c_grad.T, alpha]}
     make_plots(time, [y_c_grad], f'{directory}Critic gradient norms', r'$t$ [s]', [r'||$\nabla_c$||'], save=save, colors=colors, log=[0])
-    place_brr()
+    # place_brr()
 
     fig   = plt.figure()
     title = f'{directory}PSD alpha responses'
@@ -322,7 +322,7 @@ def MC_plotting(directory, arrays, dt, t_end, alpha, save=False, colors=None):
     plt.xscale('log'); plt.grid()
     plt.xlabel('Frequency [Hz]'); plt.ylabel('Normalized magnitude [-]')
     # put window on bot right right
-    place_brr()
+    # place_brr()
 
     if save:
         plt.savefig(f'{title.replace(" ", "_")}.pdf')
@@ -413,7 +413,7 @@ def hparams_saving(directory, arrays, idhp, idhp_config, dt, t_end, alpha, metri
     if save:
         plt.savefig(f'{title.replace(" ", "_")}.pdf')
     # put window on bot right
-    place_br()
+    # place_br()
 
     aoas = np.rad2deg(x_array[:,:,0].T)
     qs   = np.rad2deg(x_array[:,:,1].T)
@@ -427,7 +427,7 @@ def hparams_saving(directory, arrays, idhp, idhp_config, dt, t_end, alpha, metri
     # print(np.rad2deg(x_array[:,:,0].T).shape, np.rad2deg(idhp.ref_hist[:]).shape, np.rad2deg(x_array[:,:,1]).shape, (20*a_array.T).shape)
     make_plots(time, [y_alpha, y_q, y_de], title, r'$t$ [s]', [r'$\delta \alpha$ [deg]', r'$\delta q$ [deg]', r'$\delta d_e$ [deg]'], save=save, colors=colors)
     # put window on top right
-    place_tr()
+    # place_tr()
 
     fig   = plt.figure()
     title = f'{directory}PSD alpha responses'
@@ -436,7 +436,7 @@ def hparams_saving(directory, arrays, idhp, idhp_config, dt, t_end, alpha, metri
     plt.xscale('log'); plt.grid()
     plt.xlabel('Frequency [Hz]'); plt.ylabel('Normalized magnitude')
     # put window on bot right right
-    place_brr()
+    # place_brr()
 
     if save:
         plt.savefig(f'{title.replace(" ", "_")}.pdf')
@@ -511,7 +511,7 @@ def single_run(idhp, dt, t_end, save=False):
     fig2, ax2 = make_plots(time, [y_eps], f'{directory}RLS model error norm', r'$t$ [s]', [r'$||\epsilon||$'], colors=colors, log=[0],save=save)
     # put window on bot left
     plt.xlim(t1,t2)
-    place_bl()
+    # place_bl()
     if save:
         with open(f'{directory}RLS model error norm', 'wb') as f:
             pickle.dump(fig2, f)
@@ -532,7 +532,7 @@ def single_run(idhp, dt, t_end, save=False):
     
     # put window on top right
     plt.xlim(t1,t2)
-    place_tr()
+    # place_tr()
     if save:
         with open(f'{directory}States and action', 'wb') as f:
             pickle.dump(fig3, f)
@@ -542,7 +542,7 @@ def single_run(idhp, dt, t_end, save=False):
     fig4, ax4 = make_plots(time, [y_c], f'{directory}NEGATIVE Reward history', r'$t$ [s]', [r'$-c$ [-]'], colors=colors, log=[0],save=save)
     # put window on bot right
     plt.xlim(t1,t2)
-    place_br()
+    # place_br()
     if save:
         with open(f'{directory}NEGATIVE Reward history', 'wb') as f:
             pickle.dump(fig4, f)
@@ -555,7 +555,7 @@ def single_run(idhp, dt, t_end, save=False):
     ax4[0].axhline(y=0.5, color='r', linestyle='--')
     # put window on bot right
     plt.xlim(t1,t2)
-    place_br()
+    # place_br()
     if save:
         with open(f'{directory}Alpha error', 'wb') as f:
             pickle.dump(fig4, f)
@@ -567,7 +567,7 @@ def single_run(idhp, dt, t_end, save=False):
     fig5, ax5 = make_plots(time, [y_params, y_covs], f'{directory}RLS parameters', r'$t$ [s]', [r'$\theta$', r'$\sigma$'],save=save)
     # put window on top right right
     plt.xlim(t1,t2)
-    place_trr()
+    # place_trr()
     if save:
         with open(f'{directory}RLS parameters', 'wb') as f:
             pickle.dump(fig5, f)
@@ -584,7 +584,7 @@ def single_run(idhp, dt, t_end, save=False):
     plt.xlabel('Frequency [Hz]')
     plt.ylabel('Normalized magnitude')
     # put window on bot right right
-    place_trr()
+    # place_trr()
     if save:
         plt.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
 
@@ -595,7 +595,7 @@ def single_run(idhp, dt, t_end, save=False):
     y_a_grad = {r'$||\nabla a||$': [idhp.a_grad_hist, 1]}
     fig7, ax7 = make_plots(time, [y_a_grad], f'{directory}Actor gradient norms', r'$t$ [s]', [r'||$\nabla a$||'], colors=colors, log=[0],save=save)
     plt.xlim(t1,t2)
-    place_brr()
+    # place_brr()
     if save:
         with open(f'{directory}Actor gradient norms', 'wb') as f:
             pickle.dump(fig7, f)
@@ -607,7 +607,7 @@ def single_run(idhp, dt, t_end, save=False):
     plt.xlim(t1,t2)
     plt.ylim(-0.16, 0.16)
     plt.subplots_adjust(left=0.22, top=0.96,bottom=0.20, right=0.98)
-    place_smol()
+    # place_smol()
     if save:
         with open(f'{directory}Actor gradients', 'wb') as f:
             pickle.dump(fig6, f)
@@ -616,7 +616,7 @@ def single_run(idhp, dt, t_end, save=False):
     y_c_grad = {r'$||\nabla c||$': [idhp.c_grad_hist, 1]}
     fig9, ax9 = make_plots(time, [y_c_grad], f'{directory}Critic gradient norms', r'$t$ [s]', [r'||$\nabla c$||'], colors=colors, log=[0],save=save)
     plt.xlim(t1,t2)
-    place_brr()
+    # place_brr()
     if save:
         with open(f'{directory}Critic gradient norms', 'wb') as f:
             pickle.dump(fig9, f)
@@ -628,7 +628,7 @@ def single_run(idhp, dt, t_end, save=False):
     plt.xlim(t1,t2)
     plt.ylim(-30, 40)
     plt.subplots_adjust(left=0.18, top=0.96,bottom=0.20, right=0.98)
-    place_smol()
+    # place_smol()
     if save:
         with open(f'{directory}Critic gradients', 'wb') as f:
             pickle.dump(fig8, f)
@@ -637,7 +637,7 @@ def single_run(idhp, dt, t_end, save=False):
     y_c_e  = {r'elig_c': [idhp.c_e_hist, 1]}
     fig10, ax10 = make_plots(time, [y_c_e], f'{directory}Critic eligibility trace', r'$t$ [s]', [r'elig_c'],save=save)
     plt.xlim(t1,t2)
-    place_bl()
+    # place_bl()
     if save:
         with open(f'{directory}Critic eligibility trace', 'wb') as f:
             pickle.dump(fig10, f)
@@ -646,7 +646,7 @@ def single_run(idhp, dt, t_end, save=False):
     y_a_e = {r'elig_a': [idhp.a_e_hist, 1]}
     fig11, ax11 = make_plots(time, [y_a_e], f'{directory}Actor eligibility trace', r'$t$ [s]', [r'elig_a'],save=save)
     plt.xlim(t1,t2)
-    place_br()
+    # place_br()
     if save:
         with open(f'{directory}Actor eligibility trace', 'wb') as f:
             pickle.dump(fig11, f)
@@ -784,14 +784,14 @@ def plot_idhp_nonlin(idhp, directory, save=0, show=1):
 
     # plot the learning rate curve
     fig, ax = plt.subplots()
-    title = 'eta_a'
+    title = 'eta_a history'
     fig.canvas.manager.set_window_title(f'{title}')
     ax.plot(times, idhp.log['eta_a'])
     ax.set_ylabel(r'$\eta_a$')
     ax.set_xlabel(r'$t$ [s]')
     ax.grid()
     ax.set_xlim(0, times[-1])
-    place_trr()
+    # place_trr()
     if save:
         fig.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
         with open(f'{directory}{title.replace(" ", "_")}.pickle', 'wb') as f:
@@ -827,7 +827,7 @@ def plot_idhp_nonlin(idhp, directory, save=0, show=1):
     ax[5].grid()
     ax[5].set_ylim(1940, 2520)
     ax[6].plot(times, action_commanded)
-    ax[6].set_ylabel(r'$\delta_{e, cmd}$ [deg]')
+    ax[6].set_ylabel(r"$\delta'_{e}$ [deg]")
     ax[6].grid()
     ax[6].set_ylim(-16, 16)
     ax[7].plot(times, action_effective)
@@ -836,7 +836,7 @@ def plot_idhp_nonlin(idhp, directory, save=0, show=1):
     ax[7].set_ylim(-16, 16)
     ax[-1].set_xlabel(r'$t$ [s]')
     ax[-1].set_xlim(0, times[-1])
-    place_l()
+    # place_l()
     fig.set_size_inches(7,8.4)
     fig.subplots_adjust(left=0.11, top=0.96,bottom=0.075, right=0.98)
     if save:
@@ -854,14 +854,14 @@ def plot_idhp_nonlin(idhp, directory, save=0, show=1):
     ax[0].legend()
     ax[0].grid()
     ax[0].set_ylabel(r'$\theta$ [deg]')
-    ax[1].plot(times, action_commanded, label=r'$\delta_{e, cmd}$')
+    ax[1].plot(times, action_commanded, label=r"$\delta'_{e}$")
     ax[1].grid()
-    ax[1].set_ylabel(r'$\delta_{e, cmd}$ [deg]')
+    ax[1].set_ylabel(r"$\delta'_{e}$ [deg]")
     ax[-1].set_xlabel(r'$t$ [s]')
     ax[-1].set_xlim(0, times[-1])
-    place_tr()
+    # place_tr()
     fig.set_size_inches(6.15,3.5)
-    fig.subplots_adjust(left=0.0190, top=0.96,bottom=0.13, right=0.98)
+    fig.subplots_adjust(left=0.1, top=0.96,bottom=0.13, right=0.98)
     if save:
         fig.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
         with open(f'{directory}{title.replace(" ", "_")}.pickle', 'wb') as f:
@@ -875,7 +875,7 @@ def plot_idhp_nonlin(idhp, directory, save=0, show=1):
     title = 'Weights evolution'
     fig1, ax1 = make_plots(times, [y_aw1, y_aw2, y_cw1, y_cw2], f'{directory}{title}', r'$t$ [s]', [r'Actor $w_1$', r'Actor $w_2$', r'Critic $w_1$', r'Critic $w_2$'], save=0)
     ax1[-1].set_xlim(0, times[-1])
-    place_br()
+    # place_br()
     if save:
         fig1.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
         with open(f'{directory}{title.replace(" ", "_")}.pickle', 'wb') as f:
@@ -887,29 +887,12 @@ def plot_idhp_nonlin(idhp, directory, save=0, show=1):
     title = 'Gradient norms'
     fig2, ax2 = make_plots(times, [y_a_grad, y_c_grad], f'{directory}{title}', r'$t$ [s]', [r'||$\nabla a$||', r'||$\nabla c$||'], save=0)
     ax2[-1].set_xlim(0, times[-1])
-    place_brr()
+    # place_brr()
     if save:
         fig2.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
         with open(f'{directory}{title.replace(" ", "_")}.pickle', 'wb') as f:
             pickle.dump(fig, f)
 
-    # plotting the longitudinal error
-    fig, ax = plt.subplots()
-    title = 'q_error'
-    fig.canvas.manager.set_window_title(f'{title}')
-    ax.plot(times, error[:,0])
-    ax.set_ylabel(r'$e$ [deg]')
-    ax.set_xlabel(r'$t$ [s]')
-    ax.set_ylim(-4,4)
-    ax.set_xlim(0, times[-1])
-    ax.grid()
-    place_r()
-    fig.set_size_inches(6.15,2)
-    fig.subplots_adjust(left=0.090, top=0.96,bottom=0.24, right=0.98)
-    if save:
-        fig.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
-        with open(f'{directory}{title.replace(" ", "_")}.pickle', 'wb') as f:
-            pickle.dump(fig, f)
 
     fig, ax = plt.subplots(3,1)
     title = 'RLS_theta_cov_eps'
@@ -1137,12 +1120,12 @@ def MC_test_hparam_plot(log, directory, times, yref, repetitions, idhp_config, s
         ax[6].grid()
         ax[6].set_ylim(-16, 16)
         ax[7].plot(times, log['action_eff'].T, color='C0', alpha=transparency)
-        ax[7].set_ylabel(r'$\delta_{e, eff}$ [deg]')
+        ax[7].set_ylabel(r'$\delta_{e}$ [deg]')
         ax[7].grid()
         ax[7].set_ylim(-16, 16)
         ax[-1].set_xlabel(r'$t$ [s]')
         ax[-1].set_xlim(times[0], times[-1])
-        place_l()
+        # place_l()
         fig.set_size_inches(7,8.4)
         fig.subplots_adjust(left=0.11, top=0.995,bottom=0.055, right=0.98)
         if save:
@@ -1170,7 +1153,7 @@ def MC_test_hparam_plot(log, directory, times, yref, repetitions, idhp_config, s
         ax[1].set_ylim(-16, 16)
         ax[-1].set_xlabel(r'$t$ [s]')
         ax[-1].set_xlim(times[0], times[-1])
-        place_tr()
+        # place_tr()
         fig.align_ylabels(ax[:])
         # fig.set_size_inches(7.4,3.7)
         fig.set_size_inches(6,3.7)
@@ -1186,7 +1169,7 @@ def MC_test_hparam_plot(log, directory, times, yref, repetitions, idhp_config, s
         title = 'Weights evolution'
         fig1, ax1 = make_plots(times, [y_aw1, y_cw2], f'{directory}{title}', r'$t$ [s]', [r'Actor $||w||$', r'Critic $||w||$'], save=0, colors=['C0'])
         ax1[-1].set_xlim(times[0], times[-1])
-        place_br()
+        # place_br()
         if save:
             fig1.savefig(f'{directory}{title.replace(" ", "_")}.pdf')
 
@@ -1200,7 +1183,7 @@ def MC_test_hparam_plot(log, directory, times, yref, repetitions, idhp_config, s
         ax.set_ylim(-4,4)
         ax.set_xlim(times[0], times[-1])
         ax.grid()
-        place_r()
+        # place_r()
         fig.set_size_inches(6.15,2)
         fig.subplots_adjust(left=0.090, top=0.96,bottom=0.24, right=0.98)
         if save:

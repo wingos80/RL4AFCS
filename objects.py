@@ -1558,10 +1558,10 @@ class IDHPnonlin():
                 break
             
         # profiling times
-        if self.verbose:
-            print(f"Profling times:\nt1: {t1:.3f}\nt2: {t2:.3f} (t21: {self.t21:3f}, t22: {self.t22:3f}, t23: {self.t23:3f})\nt3: {t3:.3f} (t31: {t31:.3f}, t32: {t32:.3f})\nt4: {t4:.3f}")
-            print(f'\nt211: {self.t211:.3f}, t212: {self.t212:.3f}, t213: {self.t213:.3f}, t214: {self.t214:.3f}')
-            print(f't311: {self.t311:.3f}, t312: {self.t312:.3f}, t313: {self.t313:.3f}, t314: {self.t314:.3f}, t315: {self.t315:.3f}')
+        # if self.verbose:
+            # print(f"Profling times:\nt1: {t1:.3f}\nt2: {t2:.3f} (t21: {self.t21:3f}, t22: {self.t22:3f}, t23: {self.t23:3f})\nt3: {t3:.3f} (t31: {t31:.3f}, t32: {t32:.3f})\nt4: {t4:.3f}")
+            # print(f'\nt211: {self.t211:.3f}, t212: {self.t212:.3f}, t213: {self.t213:.3f}, t214: {self.t214:.3f}')
+            # print(f't311: {self.t311:.3f}, t312: {self.t312:.3f}, t313: {self.t313:.3f}, t314: {self.t314:.3f}, t315: {self.t315:.3f}')
 
 
 if __name__ == "__main__":

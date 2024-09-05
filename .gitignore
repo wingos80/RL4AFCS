@@ -2,6 +2,11 @@
 ##########################
 linearizing/slprj/
 
-# Ignore all tuning attempts #
+# Ignore all experiments #
 ##########################
 IDHP/exps/
+
+# Ignore hidden files #
+##########################
+__pycache__/
+*.pyc
